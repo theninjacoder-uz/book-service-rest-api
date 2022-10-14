@@ -1,9 +1,7 @@
 package models
 
 import (
-	"encoding/json"
-	"fmt"
-	"net/http"
+	"github.com/gin-gonic/gin"
 )
 
 type Response struct {
@@ -12,27 +10,17 @@ type Response struct {
 	Data    interface{} `json:"data"`
 }
 
-func setPayload(w http.ResponseWriter, statusCode int, data interface{}) {
-	w.WriteHeader(statusCode)
-	err := json.NewEncoder(w).Encode(data)
-	if err != nil {
-		fmt.Fprintf(w, "%s", err.Error())
-	}
+func (res *Response) SuccessReponse(c *gin.Context, statusCode int) {
+	c.JSON(statusCode, gin.H{
+		"message": res.Message,
+		"isOk":    res.IsOk,
+		"data":    res.Data,
+	})
 }
 
-func (res *Response) SuccessReponse(w http.ResponseWriter, statusCode int) {
-	setPayload(w, statusCode, res)
-}
-
-func ErrorResponse(w http.ResponseWriter, statusCode int, err error) {
-
-	if err != nil {
-		setPayload(w, statusCode, struct {
-			Error string `json:"error"`
-		}{
-			Error: err.Error(),
-		})
-		return
-	}
-	setPayload(w, http.StatusBadRequest, nil)
+func ErrorResponse(c *gin.Context, statusCode int, err error) {
+	c.JSON(statusCode, gin.H{
+		"status": statusCode,
+		"error":  err.Error(),
+	})
 }

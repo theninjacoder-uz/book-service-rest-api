@@ -2,19 +2,18 @@ package controllers
 
 import (
 	"fmt"
-	"log"
-	"net/http"
-	"task/models"
-
-	"github.com/gorilla/mux"
+	"github.com/gin-gonic/gin"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"log"
+	"net/http"
+	"task/models"
 )
 
 type Server struct {
 	DB     *gorm.DB
-	Router *mux.Router
+	Router *gin.Engine
 }
 
 func (server *Server) Initialize(Dbdriver, DbHost, DbUser, DbPassword, DbName, DbPort string) {
@@ -27,6 +26,7 @@ func (server *Server) Initialize(Dbdriver, DbHost, DbUser, DbPassword, DbName, D
 		if err != nil {
 			fmt.Printf("Cannot connect to %s database", Dbdriver)
 			log.Fatal("This is the error:", err)
+
 		} else {
 			fmt.Printf("We are connected to the %s database", Dbdriver)
 		}
@@ -36,21 +36,22 @@ func (server *Server) Initialize(Dbdriver, DbHost, DbUser, DbPassword, DbName, D
 		if err != nil {
 			fmt.Printf("Cannot connect to %s database", Dbdriver)
 			log.Fatal("This is the error:", err)
+
 		} else {
 			fmt.Printf("We are connected to the %s database", Dbdriver)
 		}
 	default:
-		fmt.Printf("Invalid %s database driver", Dbdriver)
+		fmt.Printf("Unknown driver: %s", Dbdriver)
 		return
 	}
 
 	server.DB.Debug().AutoMigrate(&models.User{}, &models.Book{})
-	server.Router = mux.NewRouter()
+	server.Router = gin.Default()
 
 	server.initializeRoutes()
 }
 
 func (server *Server) Run(addr string) {
-	fmt.Println("Listening to port %s", addr)
+	fmt.Printf("Listening to port %s", addr)
 	log.Fatal(http.ListenAndServe(addr, server.Router))
 }

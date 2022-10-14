@@ -11,10 +11,10 @@ import (
 type User struct {
 	ID        uint64    `json:"id" gorm: "primary_key:auto_increment;"`
 	Name      string    `json:"name" gorm:"type:varchar(255);not null"`
-	Key       string    `json:"key" gorm:"type:varchar";not null;uniqueIndex`
+	Key       string    `json:"key" gorm:"type:varchar";not null;unique;uniqueIndex`
 	Secret    string    `json:"secret" gorm:"type:varchar;not null"`
-	CreatedAt time.Time `json:"created_at,omitempty"`
-	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	CreatedAt time.Time `json:"-"`
+	UpdatedAt time.Time `json:"-"`
 }
 
 func (u *User) Validate(action string) error {
