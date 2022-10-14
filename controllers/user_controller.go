@@ -10,15 +10,15 @@ import (
 )
 
 func (server *Server) SignUp(c *gin.Context) {
-	body, err := io.ReadAll(c.Request.Body)
 
+	body, err := io.ReadAll(c.Request.Body)
 	if err != nil {
 		models.ErrorResponse(c, http.StatusUnprocessableEntity, err)
 		return
 	}
+
 	user := models.User{}
 	err = json.Unmarshal(body, &user)
-
 	if err != nil {
 		models.ErrorResponse(c, http.StatusUnprocessableEntity, err)
 		return

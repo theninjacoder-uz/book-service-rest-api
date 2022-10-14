@@ -19,6 +19,8 @@ type Server struct {
 func (server *Server) Initialize(Dbdriver, DbHost, DbUser, DbPassword, DbName, DbPort string) {
 	var err error
 
+	//different kind of database can be used, .env variables should be edited
+	// default in this project postgres was used
 	switch Dbdriver {
 	case "mysql":
 		DBURL := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local", DbUser, DbPassword, DbHost, DbPort, DbName)
@@ -45,9 +47,11 @@ func (server *Server) Initialize(Dbdriver, DbHost, DbUser, DbPassword, DbName, D
 		return
 	}
 
+	//database migration
 	server.DB.Debug().AutoMigrate(&models.User{}, &models.Book{})
 	server.Router = gin.Default()
 
+	//initializing routers
 	server.initializeRoutes()
 }
 

@@ -9,9 +9,9 @@ import (
 )
 
 type User struct {
-	ID        uint64    `json:"id" gorm: "primary_key:auto_increment;"`
+	ID        uint64    `json:"id" gorm: "primary_key:auto_increment"`
 	Name      string    `json:"name" gorm:"type:varchar(255);not null"`
-	Key       string    `json:"key" gorm:"type:varchar";not null;unique;uniqueIndex`
+	Key       string    `json:"key" gorm:"type:varchar;not null;uniqueIndex;unique"`
 	Secret    string    `json:"secret" gorm:"type:varchar;not null"`
 	CreatedAt time.Time `json:"-"`
 	UpdatedAt time.Time `json:"-"`
@@ -41,7 +41,12 @@ func (u *User) Prepare() {
 }
 
 func (u *User) SaveUser(db *gorm.DB) (*User, error) {
-
+	_, err := u.GetUserInfo(db, u.Key)
+	if err == nil {
+		return &User{}, errors.New("key already signed up")
+	}
+	
+	u.Prepare()
 	if err := db.Debug().Create(&u).Error; err != nil {
 		return &User{}, err
 	}
@@ -54,5 +59,5 @@ func (u *User) GetUserInfo(db *gorm.DB, key string) (*User, error) {
 	if err != nil {
 		return &User{}, err
 	}
-	return u, err
+	return u, nil
 }

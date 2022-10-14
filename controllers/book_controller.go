@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 	"strconv"
@@ -12,10 +11,10 @@ import (
 )
 
 func (server *Server) CreateABook(c *gin.Context) {
+
 	body, err := io.ReadAll(c.Request.Body)
-	fmt.Printf("Request body: %v", body)
+	// fmt.Printf("Request body: %v", body)
 	if err != nil {
-		fmt.Println("1")
 		models.ErrorResponse(c, http.StatusUnprocessableEntity, err)
 		return
 	}
@@ -23,24 +22,20 @@ func (server *Server) CreateABook(c *gin.Context) {
 	err = json.Unmarshal(body, &book)
 
 	if err != nil {
-		fmt.Println("2")
 		models.ErrorResponse(c, http.StatusUnprocessableEntity, err)
 		return
 	}
+
+	//Validate book's value before saving
 	err = book.Validate("create")
-
 	if err != nil {
-		fmt.Println("3")
-
 		models.ErrorResponse(c, http.StatusBadRequest, err)
 		return
 	}
 
+	// Save book into db
 	data, err := book.SaveABook(server.DB)
-
 	if err != nil {
-		fmt.Println("4")
-
 		models.ErrorResponse(c, http.StatusConflict, err)
 		return
 	}
@@ -50,7 +45,6 @@ func (server *Server) CreateABook(c *gin.Context) {
 		IsOk:    true,
 		Data:    data,
 	}
-
 	res.SuccessReponse(c, http.StatusCreated)
 }
 
@@ -58,30 +52,37 @@ func (server *Server) CreateABook(c *gin.Context) {
 func (server *Server) UpdateABook(c *gin.Context) {
 
 	book := models.Book{}
+	bookDto := models.BookDto{}
 
 	body, err := io.ReadAll(c.Request.Body)
 	if err != nil {
 		models.ErrorResponse(c, http.StatusBadRequest, err)
 		return
 	}
-	err = json.Unmarshal(body, &book)
+
+	err = json.Unmarshal(body, &bookDto)
 	if err != nil {
 		models.ErrorResponse(c, http.StatusBadRequest, err)
 		return
 	}
+	book = bookDto.Book
+	book.Status = bookDto.Status
 
+	//Validate book's value before updating
 	err = book.Validate("update")
 	if err != nil {
 		models.ErrorResponse(c, http.StatusBadRequest, err)
 		return
 	}
 
+	//Extract book id from url path
 	bookID, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
 		models.ErrorResponse(c, http.StatusBadRequest, err)
 		return
 	}
 
+	//Update a book by id
 	data, err := book.UpdateABook(server.DB, uint64(bookID))
 	if err != nil {
 		models.ErrorResponse(c, http.StatusNoContent, err)
@@ -118,12 +119,14 @@ func (server *Server) GetAllBooks(c *gin.Context) {
 
 func (server *Server) DeleteABook(c *gin.Context) {
 	book := models.Book{}
+	//Extract book id from url path
 	bookID, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
 		models.ErrorResponse(c, http.StatusBadRequest, err)
 		return
 	}
 
+	//delete a book by id
 	_, e := book.DeleteABook(server.DB, uint64(bookID))
 	if e != nil {
 		models.ErrorResponse(c, http.StatusBadRequest, e)

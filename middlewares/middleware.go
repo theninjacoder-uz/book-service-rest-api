@@ -78,15 +78,26 @@ func getUserSecret(db *gorm.DB, key string) (string, error) {
 }
 
 func generateSign(body []byte, uri string, secret string) (string, error) {
+
 	compactedBuffer := new(bytes.Buffer)
-	if err := json.Compact(compactedBuffer, body); err != nil {
-		return "", errors.New("Error during body parse")
+	var rawSign string // string to make sign
+
+	// Compact json data trim white spaces and make one line
+	if body != nil && len(body) != 0 {
+		err := json.Compact(compactedBuffer, body)
+		if err != nil {
+			return "", errors.New("Error during body parse")
+		}
+		rawSign = uri + compactedBuffer.String() + secret
+	} else {
+		rawSign = uri + secret
 	}
-	rawSign := uri + compactedBuffer.String() + secret
+	// fmt.Printf("Raw signature: %v", rawSign)
 	hash := encode(rawSign)
 	return hash, nil
 }
 
+// Encode string with md5 and return with string format
 func encode(data string) string {
 	h := md5.New()
 	io.WriteString(h, data)
