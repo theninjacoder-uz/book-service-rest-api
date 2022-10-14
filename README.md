@@ -1,7 +1,7 @@
 # book-service-rest-api
 
 Simple Rest API for managing book's CRUD.
-App retrieves book info from OpenLibrary api by ISBN
+App retrieves book info from [OpenLibrary](https://openlibrary.org/dev/docs/api/books) api by ISBN
 
 Authentication
 All requests, excluding /signup, should have these headers to be authorizes:
