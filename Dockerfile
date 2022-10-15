@@ -1,6 +1,6 @@
 
 # Start from golang base image
-FROM golang:alpine as builder
+FROM golang:1.9.6-alpine3.7 as builder
 
 # Add Maintainer info
 LABEL maintainer="Bekhzod Asadullaev <bekhzod.asadullayev@gmail.com>"
@@ -22,7 +22,8 @@ RUN go mod download
 COPY . .
 
 # Build the Go app
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main .
+# RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main .
+RUN go build -o main .
 
 # Start a new stage from scratch
 FROM alpine:latest
