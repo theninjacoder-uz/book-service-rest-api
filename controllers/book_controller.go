@@ -85,7 +85,7 @@ func (server *Server) UpdateABook(c *gin.Context) {
 	//Update a book by id
 	data, err := book.UpdateABook(server.DB, uint64(bookID))
 	if err != nil {
-		models.ErrorResponse(c, http.StatusNoContent, err)
+		models.ErrorResponse(c, http.StatusNotFound, err)
 		return
 	}
 

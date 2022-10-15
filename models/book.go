@@ -138,10 +138,18 @@ func (b *Book) FindAllBooks(db *gorm.DB) (*[]BookDto, error) {
 
 func (b *Book) UpdateABook(db *gorm.DB, id uint64) (*BookDto, error) {
 
-	err := db.Debug().Model(&Book{}).Where("id = ?", id).Updates(Book{Isbn: b.Isbn, Title: b.Title, Author: b.Author, Published: b.Published, Pages: b.Pages, Status: b.Status, UpdatedAt: time.Now()}).Error
-
+	var err error
+	//check data if exist
+	origBook := Book{}
+	err = db.Debug().Model(&Book{}).Where("id = ?", id).Take(&origBook).Error
 	if err != nil {
 		return &BookDto{}, fmt.Errorf("record not found with id: %v", id)
+	}
+
+	//fully update no partial update
+	err = db.Debug().Model(&Book{}).Where("id = ?", id).Updates(Book{Isbn: b.Isbn, Title: b.Title, Author: b.Author, Published: b.Published, Pages: b.Pages, Status: b.Status, UpdatedAt: time.Now()}).Error
+	if err != nil {
+		return &BookDto{}, err
 	}
 	b.ID = id
 	return &BookDto{Book: *b, Status: b.Status}, nil
