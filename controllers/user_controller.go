@@ -50,7 +50,7 @@ func (server *Server) GetMe(c *gin.Context) {
 
 	data, err := user.GetUserInfo(server.DB, key)
 	if err != nil {
-		models.ErrorResponse(c, http.StatusNoContent, err)
+		models.ErrorResponse(c, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -59,5 +59,5 @@ func (server *Server) GetMe(c *gin.Context) {
 		IsOk:    true,
 		Data:    data,
 	}
-	res.SuccessReponse(c, http.StatusCreated)
+	res.SuccessReponse(c, http.StatusOK)
 }

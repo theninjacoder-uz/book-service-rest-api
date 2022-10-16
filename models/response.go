@@ -20,7 +20,8 @@ func (res *Response) SuccessReponse(c *gin.Context, statusCode int) {
 
 func ErrorResponse(c *gin.Context, statusCode int, err error) {
 	c.JSON(statusCode, gin.H{
-		"status": statusCode,
-		"error":  err.Error(),
+		"message": err.Error(),
+		"isOk":    false,
+		"data":    nil,
 	})
 }
