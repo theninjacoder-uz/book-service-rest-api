@@ -61,3 +61,20 @@ func (server *Server) GetMe(c *gin.Context) {
 	}
 	res.SuccessReponse(c, http.StatusOK)
 }
+
+// clear all records
+func (server *Server) CleanUp(c *gin.Context) {
+	user := models.User{}
+	book := models.Book{}
+	err := user.DeleteAllUsers(server.DB)
+	if err != nil {
+		models.ErrorResponse(c, http.StatusInternalServerError, err)
+		return
+	}
+
+	err = book.DeleteAllBooks(server.DB)
+	if err != nil {
+		models.ErrorResponse(c, http.StatusInternalServerError, err)
+		return
+	}
+}

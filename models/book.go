@@ -170,3 +170,8 @@ func (b *Book) FindABookByIsbn(db *gorm.DB, isbn string) (*Book, error) {
 	}
 	return b, nil
 }
+
+func (b *Book) DeleteAllBooks(db *gorm.DB) error {
+	err := db.Debug().Model(Book{}).Where("1 = 1").Delete(&Book{}).Error
+	return err
+}

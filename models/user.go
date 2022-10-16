@@ -62,8 +62,7 @@ func (u *User) GetUserInfo(db *gorm.DB, key string) (*User, error) {
 	return u, nil
 }
 
-// clear all records
-func CleanUp(db *gorm.DB) {
-	db.Debug().Model(&User{}).Where("1 = 1").Delete(&User{})
-	db.Debug().Model(&Book{}).Where("1 = 1").Delete(&Book{})
+func (u *User) DeleteAllUsers(db *gorm.DB) error {
+	err := db.Debug().Model(User{}).Where("1 = 1").Delete(&User{}).Error
+	return err
 }
