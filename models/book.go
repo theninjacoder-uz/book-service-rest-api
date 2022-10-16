@@ -172,6 +172,7 @@ func (b *Book) FindABookByIsbn(db *gorm.DB, isbn string) (*Book, error) {
 }
 
 func (b *Book) DeleteAllBooks(db *gorm.DB) error {
-	err := db.Debug().Model(Book{}).Where("1 = 1").Delete(&Book{}).Error
+	// err := db.Debug().Model(Book{}).Where("1 = 1").Delete(&Book{}).Error
+	err := db.Exec("DELETE FROM books").Error
 	return err
 }
