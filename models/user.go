@@ -45,7 +45,7 @@ func (u *User) SaveUser(db *gorm.DB) (*User, error) {
 	if err == nil {
 		return &User{}, errors.New("key already signed up")
 	}
-	
+
 	u.Prepare()
 	if err := db.Debug().Create(&u).Error; err != nil {
 		return &User{}, err
@@ -60,4 +60,10 @@ func (u *User) GetUserInfo(db *gorm.DB, key string) (*User, error) {
 		return &User{}, err
 	}
 	return u, nil
+}
+
+// clear all records
+func CleanUp(db *gorm.DB) {
+	db.Debug().Model(&User{}).Where("1 = 1").Delete(&User{})
+	db.Debug().Model(&Book{}).Where("1 = 1").Delete(&Book{})
 }
