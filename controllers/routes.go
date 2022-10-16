@@ -9,7 +9,7 @@ func (s *Server) initializeRoutes() {
 	router := s.Router.Group("")
 
 	router.POST("/signup", s.SignUp)
-	router.GET("/cleanup", middlewares.SetMiddlewareAuthentication(s.DB), s.CleanUp)
+	router.GET("/cleanup", s.CleanUp)
 	router.GET("/myself", middlewares.SetMiddlewareAuthentication(s.DB), s.GetMe)
 	router.GET("/books", middlewares.SetMiddlewareAuthentication(s.DB), s.GetAllBooks)
 	router.POST("/books", middlewares.SetMiddlewareAuthentication(s.DB), s.CreateABook)

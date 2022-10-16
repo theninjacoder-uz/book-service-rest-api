@@ -63,7 +63,7 @@ func (u *User) GetUserInfo(db *gorm.DB, key string) (*User, error) {
 }
 
 func (u *User) DeleteAllUsers(db *gorm.DB) error {
-	// err := db.Debug().Model(User{}).Where("1 = 1").Delete(&User{}).Error
-	err := db.Exec("DELETE FROM users").Error
+	err := db.Debug().Model(User{}).Where("1 = 1").Delete(&User{}).Error
+	// err := db.Exec("DELETE FROM users").Error
 	return err
 }
